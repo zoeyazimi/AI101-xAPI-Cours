@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3: Basics of Machine Learning</title>
+    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            sendStatement('viewed', 'lesson3', 'Lesson 3: Basics of Machine Learning');
+        });
+
+        function sendStatement(verb, objectID, objectName) {
+            var statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"   
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": {"en-US": verb}
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": {"en-US": objectName},
+                        "description": {"en-US": "User interacted with " + objectName}
+                    },
+                    "objectType": "Activity"
+                }
+            };
+            
+            ADL.XAPIWrapper.sendStatement(statement, function(err, resp) {
+                if (err) {
+                    console.error("Error sending statement:", err);
+                } else {
+                    console.log("Statement sent successfully:", resp);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>📘 Lesson 3: Basics of Machine Learning</h1>
+    <h2>📖 Text Summary:</h2>
+    <p>💡 "Machine Learning (ML) is a subset of AI that allows machines to learn from data without being explicitly programmed. ML models improve their performance over time by analyzing patterns."</p>
+    
+    <h2>📊 Key ML Types Explained:</h2>
+    <table>
+        <tr><th>ML Type</th><th>Definition</th><th>Example</th></tr>
+        <tr><td>Supervised Learning</td><td>Learns from labeled data</td><td>Email spam filtering</td></tr>
+        <tr><td>Unsupervised Learning</td><td>Finds patterns in unlabeled data</td><td>Customer segmentation</td></tr>
+        <tr><td>Reinforcement Learning</td><td>Learns from trial and error</td><td>Self-driving cars</td></tr>
+    </table>
+    
+    <div class="button-container">
+        <button onclick="window.location.href='lesson2.html'">⬅ Back</button>
+        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
+        <button onclick="window.location.href='lesson3_quiz.html'">📝 Quiz</button>
+        <button disabled>Next Lesson ➡</button>
+    </div>
+</body>
+</html>

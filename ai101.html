@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to AI - Course Overview</title>
+    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // xAPI Configuration
+            var conf = {
+                "endpoint": "https://lrs.adlnet.gov/xAPI/",
+                "auth": "Basic " + btoa("zoey azimi:qytqag-pyVwa3-jofgoz")
+            };
+            ADL.XAPIWrapper.changeConfig(conf);
+            
+            // Send "viewed" event when landing page loads
+            sendStatement("viewed", "ai101-course", "Introduction to AI Course");
+        });
+
+        function sendStatement(verb, objectID, objectName) {
+            var statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"   
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": {"en-US": verb}
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": {"en-US": objectName},
+                        "description": {"en-US": "User interacted with " + objectName}
+                    },
+                    "objectType": "Activity"
+                }
+            };
+            
+            ADL.XAPIWrapper.sendStatement(statement, function(err, resp) {
+                if (err) {
+                    console.error("Error sending statement:", err);
+                } else {
+                    console.log("Statement sent successfully:", resp);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>📚 Course Title: Introduction to AI</h1>
+    <h2>🎯 Learning Objectives (LOs):</h2>
+    <p>By the end of this module, learners should be able to:</p>
+    <ul>
+        <li><strong>Define Artificial Intelligence (AI)</strong> and its key concepts. How it differs from traditional automation.</li>
+        <li>Identify <strong>real-world applications</strong> of AI.</li>
+        <li>Understand <strong>Machine Learning (ML)</strong> as a subset of AI.</li>
+        <li>Differentiate between <strong>Supervised, Unsupervised, and Reinforcement Learning</strong>.</li>
+    </ul>
+
+    <h2>📚 Course Structure & Content</h2>
+    <table border="1">
+        <tr>
+            <th>Lesson</th>
+            <th>Content Format</th>
+            <th>Main Topics</th>
+            <th>Assessment Type</th>
+        </tr>
+        <tr>
+            <td><a href="lesson1.html" onclick="sendStatement('interacted', 'lesson1', 'Lesson 1: What is AI?')">Lesson 1: What is AI?</a></td>
+            <td>📖 Text & 🎬 Video</td>
+            <td>AI definition, history, goals, AI vs. Automation</td>
+            <td>MCQs + open-ended</td>
+        </tr>
+        <tr>
+            <td><a href="lesson2.html" onclick="sendStatement('interacted', 'lesson2', 'Lesson 2: AI Applications')">Lesson 2: AI Applications</a></td>
+            <td>📊 Examples (📖 Text) & Images</td>
+            <td>AI in healthcare, finance, gaming, robotics</td>
+            <td>MCQs + open-ended</td>
+        </tr>
+        <tr>
+            <td><a href="lesson3.html" onclick="sendStatement('interacted', 'lesson3', 'Lesson 3: Basics of Machine Learning')">Lesson 3: Basics of Machine Learning</a></td>
+            <td>📊 Infographics & 📖 Text</td>
+            <td>ML types (Supervised, Unsupervised, RL), key algorithms</td>
+            <td>MCQs + Case Study</td>
+        </tr>
+    </table>
+</body>
+</html>

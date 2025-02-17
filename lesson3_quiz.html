@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 3 Quiz</title>
+    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+    </style>
+    <script>
+        function checkAnswer() {
+            var selected = document.querySelector('input[name="q1"]:checked');
+            if (!selected) return;
+            
+            var answer = selected.value;
+            document.getElementById('feedback').innerHTML = "";
+            
+            if (answer === "A") {
+                document.getElementById('feedback').innerHTML = "✔ Correct answer: A) Supervised learning requires labeled data for training.";
+                document.getElementById('feedback').className = "correct";
+            } else {
+                document.getElementById('feedback').innerHTML = "❌ Incorrect. The correct answer is: A) Supervised learning requires labeled data for training.";
+                document.getElementById('feedback').className = "incorrect";
+            }
+            
+            sendStatement('answered', 'lesson3-quiz-q1', 'Lesson 3 Quiz Q1');
+        }
+
+        function sendStatement(verb, objectID, objectName) {
+            var statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"   
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": {"en-US": verb}
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": {"en-US": objectName},
+                        "description": {"en-US": "User interacted with " + objectName}
+                    },
+                    "objectType": "Activity"
+                }
+            };
+            
+            ADL.XAPIWrapper.sendStatement(statement, function(err, resp) {
+                if (err) {
+                    console.error("Error sending statement:", err);
+                } else {
+                    console.log("Statement sent successfully:", resp);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>📘 Lesson 3 Quiz</h1>
+    <h2>📌 MCQ Example for Lesson 3:</h2>
+    <p><strong>Q1:</strong> What is the main difference between Supervised and Unsupervised Learning?</p>
+    <form>
+        <input type="radio" name="q1" value="A"> A) Supervised learning requires labeled data, unsupervised does not<br>
+        <input type="radio" name="q1" value="B"> B) Unsupervised learning uses human-labeled datasets<br>
+        <input type="radio" name="q1" value="C"> C) Supervised learning works without any prior data<br>
+        <input type="radio" name="q1" value="D"> D) Both methods require manually labeled data<br>
+    </form>
+    <button onclick="checkAnswer()">Submit Answer</button>
+    <p id="feedback"></p>
+    
+    <div class="button-container">
+        <button onclick="window.location.href='lesson3.html'">⬅ Review Lesson</button>
+        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
+        <button onclick="alert('Next lesson will be added soon.')">Next Lesson ➡</button>
+    </div>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2: AI Applications</title>
+    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            sendStatement('viewed', 'lesson2', 'Lesson 2: AI Applications');
+        });
+
+        function sendStatement(verb, objectID, objectName) {
+            var statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"   
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": {"en-US": verb}
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": {"en-US": objectName},
+                        "description": {"en-US": "User interacted with " + objectName}
+                    },
+                    "objectType": "Activity"
+                }
+            };
+            
+            ADL.XAPIWrapper.sendStatement(statement, function(err, resp) {
+                if (err) {
+                    console.error("Error sending statement:", err);
+                } else {
+                    console.log("Statement sent successfully:", resp);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <h1>📘 Lesson 2: AI Applications</h1>
+    <h2>📖 Text Summary:</h2>
+    <p>"AI is transforming industries such as healthcare, finance, and transportation. Examples include medical diagnosis using AI models, fraud detection in banking, and self-driving cars."</p>
+    
+    <h2>📊 Case Study Examples:</h2>
+    <ul>
+        <li><strong>Healthcare:</strong> AI-powered <strong>X-ray analysis</strong> (e.g., Google’s DeepMind detecting diseases).</li>
+        <li><strong>Finance:</strong> AI fraud detection (e.g., banks identifying unusual transactions).</li>
+        <li><strong>Robotics:</strong> AI-driven self-driving cars (e.g., Tesla’s autopilot system).</li>
+    </ul>
+    
+    <div class="button-container">
+        <button onclick="window.location.href='lesson1.html'">⬅ Back</button>
+        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
+        <button onclick="window.location.href='lesson2_quiz.html'">📝 Quiz</button>
+        <button onclick="window.location.href='lesson3.html'">Next Lesson ➡</button>
+    </div>
+</body>
+</html>

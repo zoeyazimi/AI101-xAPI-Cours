@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 1 Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            background-color: #f9f9f9;
+        }
+        .options button.correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .options button.wrong {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .feedback {
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+    <script>
+        let answered = false;
+
+        function checkAnswer(selected, correct) {
+            if (answered) return; // Prevent multiple tries
+            answered = true;
+            
+            let buttons = document.querySelectorAll('.options button');
+            buttons.forEach(btn => btn.disabled = true); // Disable further selection
+            
+            if (selected === correct) {
+                document.getElementById(selected).classList.add('correct');
+                document.getElementById("feedback").innerHTML = "✅ Correct! AI learns from data and improves over time.";
+            } else {
+                document.getElementById(selected).classList.add('wrong');
+                document.getElementById("feedback").innerHTML = "❌ Incorrect. Correct answer: <span style='color: green; font-weight: bold;'>B) AI learns from data and improves over time.</span>";
+                document.getElementById(correct).classList.add('correct');
+            }
+        }
+
+        function checkOpenEndedAnswer() {
+            let response = document.getElementById("openAnswer").value.trim().toLowerCase();
+            let feedback = document.getElementById("openFeedback");
+            
+            if (!response) {
+                feedback.innerHTML = "❌ Please enter an answer before submitting.";
+                return;
+            }
+            
+            document.getElementById("aiFeedbackBtn").disabled = false;
+        }
+
+        function showAIResponse() {
+            let response = document.getElementById("openAnswer").value.trim().toLowerCase();
+            let feedback = document.getElementById("openFeedback");
+            
+            if (response.includes("learn") && response.includes("adapt")) {
+                feedback.innerHTML = "✅ Great job! AI can learn and adapt, whereas automation follows fixed rules.";
+            } else {
+                feedback.innerHTML = "❌ Think about how AI chatbots like Siri respond differently each time, but automation is repetitive.";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>📝 Lesson 1 Quiz</h1>
+    
+    <div class="question">
+        <h2>Q1: Which of the following best describes AI?</h2>
+        <div class="options">
+            <button id="A" onclick="checkAnswer('A', 'B')">A) A system that follows only pre-defined rules</button>
+            <button id="B" onclick="checkAnswer('B', 'B')">B) A system that can learn from experience and improve itself</button>
+            <button id="C" onclick="checkAnswer('C', 'B')">C) A system that automates manual tasks but cannot make decisions</button>
+            <button id="D" onclick="checkAnswer('D', 'B')">D) A system that can only work when directly controlled by humans</button>
+        </div>
+        <p id="feedback" class="feedback"></p>
+    </div>
+
+    <div class="question">
+        <h2>✍ Open-ended question:</h2>
+        <p>"In your own words, explain the difference between AI and automation."</p>
+        <textarea id="openAnswer" placeholder="Type your response here..."></textarea>
+        <button onclick="checkOpenEndedAnswer()">Submit</button>
+        <button id="aiFeedbackBtn" onclick="showAIResponse()" disabled>AI Tutor Feedback</button>
+        <p id="openFeedback" class="feedback"></p>
+    </div>
+    
+    <div class="button-container">
+        <button onclick="window.location.href='lesson1.html'">Review Lesson</button>
+        <button onclick="window.location.href='lesson2.html'"> Next Lesson ➡</button>
+        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
+        <button onclick="window.location.href='exit.html'">Quit</button>
+    </div>
+</body>
+</html>

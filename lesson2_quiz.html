@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 2 Quiz</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        .question {
+            margin-bottom: 20px;
+        }
+        .options button {
+            display: block;
+            margin: 5px 0;
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .correct {
+            background-color: lightgreen;
+        }
+        .incorrect {
+            background-color: lightcoral;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+    </style>
+    <script>
+        function checkAnswer(selected, correct) {
+            let buttons = document.querySelectorAll(".options button");
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (selected === correct) {
+                document.getElementById(selected).classList.add("correct");
+            } else {
+                document.getElementById(selected).classList.add("incorrect");
+                document.getElementById(correct).classList.add("correct");
+            }
+        }
+
+        function showFeedback() {
+            let userResponse = document.getElementById("openEnded").value;
+            let feedback = document.getElementById("aiFeedback");
+            if (userResponse.toLowerCase().includes("learning") || userResponse.toLowerCase().includes("data")) {
+                feedback.innerText = "Great example! AI is optimizing workflows in many industries.";
+                feedback.style.color = "green";
+            } else {
+                feedback.innerText = "Try to think of an AI system that can learn from data and improve over time.";
+                feedback.style.color = "red";
+            }
+        }
+    </script>
+</head>
+<body>
+    <h1>Lesson 2: AI Applications - Quiz</h1>
+    
+    <div class="question">
+        <h3>Q1: Which of the following is NOT an AI application?</h3>
+        <div class="options">
+            <button id="A" onclick="checkAnswer('A', 'B')">A) Self-driving cars</button>
+            <button id="B" onclick="checkAnswer('B', 'B')">B) Automated assembly line robots</button>
+            <button id="C" onclick="checkAnswer('C', 'B')">C) AI-powered fraud detection</button>
+            <button id="D" onclick="checkAnswer('D', 'B')">D) AI-based voice assistants</button>
+        </div>
+        <p id="correctAnswer"></p>
+    </div>
+    
+    <h3>Open-ended question:</h3>
+    <p>Give an example of an AI application in your industry and explain its impact.</p>
+    <textarea id="openEnded" rows="4" cols="50"></textarea>
+    <br>
+    <button onclick="showFeedback()">Submit</button>
+    <p id="aiFeedback"></p>
+    
+    <div class="button-container">
+        <button onclick="window.location.href='lesson2.html'">⬅ Review Lesson</button>
+        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
+        <button onclick="window.location.href='lesson3.html'"> Next Lesson ➡</button>
+        <button onclick="window.location.href='exit.html'">Quit</button>
+    </div>
+</body>
+</html>
