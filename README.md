@@ -90,7 +90,7 @@ AI101-xAPI-Course/
 │── lesson3.html           # Lesson 3 Content
 │── lesson3_quiz.html      # Lesson 3 Quiz
 │── assets/                # Images, CSS, and other assets
-│── scripts/
+│── scr/
 │   ├── xapiwrapper.min.js # xAPI Library
 │   ├── cryptojs_v3.1.2.js # Cryptographic Functions
 │── README.md              # Project Documentation
