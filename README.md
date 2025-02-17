@@ -118,7 +118,6 @@ AI101-xAPI-Course/
 ## 👨‍💻 Who to Contact for Support
 If you have any questions or issues, please reach out to:
 - **Project Owner:** Zoey Azimi (@zoeyazimi)
-- **Company:** Vorwerk
 - **GitHub Issues:** Submit a bug report or feature request [here](https://github.com/yourusername/AI101-xAPI-Course/issues)
 
 ---
