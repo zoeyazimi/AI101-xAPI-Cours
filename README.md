@@ -1,85 +1,49 @@
-# AI101 xAPI Course
+# 📚 AI Course with xAPI Tracking
 
 ## 🏗 Project Overview
-This project is an interactive **AI101 course** designed using **HTML and JavaScript**, integrated with **xAPI (Experience API)** to track learner interactions. The course consists of multiple lessons, each with structured content, interactive quizzes, and xAPI tracking to record user engagement and learning progress.
+This project is an **HTML-based interactive AI course** with **xAPI tracking** for learning analytics. It tracks user interactions, such as:
+- Viewing the course
+- Interacting with lessons
+- Completing quizzes
+- Watching videos
+- Submitting open-ended responses
 
-Key Features:
-- 📚 Structured lessons on **Artificial Intelligence** and **Machine Learning**.
-- 🎯 **xAPI integration** for tracking learner interactions (e.g., lesson views, quiz attempts, video plays).
-- 📝 **MCQ and open-ended quizzes** to test learner understanding.
-- 📊 Data tracking and reporting via an **xAPI Learning Record Store (LRS)**.
-- 🌍 Web-based format, deployable on any web server or LMS supporting xAPI.
-
----
+The xAPI statements are sent to the **ADL Learning Record Store (LRS)**, allowing for detailed learner analytics.
 
 ## 🔧 How to Set Up and Run It
-### **1️⃣ Clone or Download the Repository**
+### 1️⃣ Clone the Repository
 ```sh
-# Clone the repository
-git clone https://github.com/yourusername/AI101-xAPI-Course.git
-cd AI101-xAPI-Course
+git clone https://github.com/zoeyazimi/ai-xapi-course.git
+cd ai-xapi-course
 ```
-Or download the ZIP file and extract it.
 
-### **2️⃣ Open in a Web Browser**
-Simply open `ai101.html` in your preferred browser:
-- **Windows/Mac/Linux**: Double-click `ai101.html` or open it manually in **Chrome, Firefox, or Edge**.
+### 2️⃣ Open the Course Locally
+Simply open `index.html` (or `ai101.html`) in a web browser to access the course.
 
-### **3️⃣ Configure xAPI Endpoint (Optional)**
-If using a custom xAPI Learning Record Store (LRS), update the `xAPIWrapper` configuration in `xapiwrapper.min.js`.
+### 3️⃣ Configure xAPI Credentials (Optional)
+If you want to track learner data using **xAPI**, update `xapiwrapper.min.js` or `ai101.html` with your own **LRS credentials**:
 ```js
 var conf = {
-    "endpoint": "https://your-lrs-endpoint/xAPI/",
-    "auth": "Basic " + btoa("username:password")
+    "endpoint": "https://lrs.adlnet.gov/xAPI/",
+    "auth": "auth": "Basic " + btoa("username:password") #YOUR_BASE64_ENCODED_CREDENTIALS
 };
 ADL.XAPIWrapper.changeConfig(conf);
 ```
-
-### **4️⃣ Run Locally with a Simple HTTP Server** (For API Requests)
-If the xAPI requests are blocked due to CORS, serve the files using Python or Node.js:
-```sh
-# Python (3.x)
-python -m http.server 8000
-# Node.js
-npx http-server -p 8000
-```
-Then access: `http://localhost:8000/ai101.html`
-
----
+**Note1:** You can create your own **free ADL LRS account** at **[ADL LRS](https://lrs.adlnet.gov/)**.
+**Note2:**The interaction will be visible in your account and undr **my statements**  
 
 ## 🎯 xAPI Tracking and Implementation
-This course tracks the following interactions using xAPI:
-- **Course Viewed** (`viewed`)
-- **Lesson Interacted** (`interacted`)
-- **Lesson Started** (`experienced`)
-- **Lesson Completed** (`completed`)
-- **Quiz Attempted** (`answered`)
-- **Video Watched** (`experienced`)
+This course uses **xAPI statements** to track user interactions. Here’s how they are sent:
 
-Example xAPI Statement Sent:
-```json
-{
-    "actor": {
-        "name": "Jane Doe",
-        "mbox": "mailto:jane.doe@vorwerk.de"
-    },
-    "verb": {
-        "id": "http://adlnet.gov/expapi/verbs/viewed",
-        "display": {"en-US": "viewed"}
-    },
-    "object": {
-        "id": "http://vorwerk.de/xapi/lesson1",
-        "definition": {
-            "name": {"en-US": "Lesson 1: What is AI?"},
-            "description": {"en-US": "User interacted with Lesson 1"}
-        }
-    }
-}
-```
+- **Viewed Course:** `sendStatement('viewed', 'ai101', 'Introduction to AI Course');`
+- **Interacted with a Lesson:** `sendStatement('interacted', 'lesson1', 'Lesson 1: What is AI?');`
+- **Completed a Quiz:** `sendStatement('answered', 'lesson1-quiz', 'Lesson 1 Quiz');`
+- **Watched Video:** `sendStatement('experienced', 'lesson1-video', 'AI Evolution Video');`
 
----
+Each statement includes the **actor (learner), verb, and object** to store learner activity in the LRS.
 
 ## 📂 Folder Structure
+
 ```
 AI101-xAPI-Course/
 │── ai101.html             # Course Overview Page / or landing page 
@@ -96,31 +60,24 @@ AI101-xAPI-Course/
 │── README.md              # Project Documentation
 ```
 
----
-
 ## 💡 How to Contribute or Extend It
-### **1️⃣ Add New Lessons**
-- Create a new lesson file (`lesson4.html`).
-- Follow the same structure as `lesson1.html`.
-- Update `ai101.html` to include the new lesson link.
+### 🛠️ Adding New Lessons
+1. Create `lessonX.html` for the new lesson.
+2. Create `lessonX_quiz.html` for the quiz.
+3. Update `ai101.html` to include a button for the new lesson or content.
+4. Implement xAPI tracking for the new lesson.
 
-### **2️⃣ Customize xAPI Tracking**
-- Modify `xapiwrapper.min.js` to track additional user interactions.
+### 🎨 Customizing the UI
+- Modify `assets/styles.css` to change the look and feel.
+- Add new videos or interactive content to enhance learning.
 
-### **3️⃣ Style Improvements**
-- Edit `styles.css` to improve UI/UX.
-
-### **4️⃣ Enhance AI Tutor Feedback**
-- Extend AI tutor logic to provide dynamic feedback based on user responses.
-
----
+### 🔗 Connecting to Another LRS
+- Replace `https://lrs.adlnet.gov/xAPI/` with another LRS endpoint in `xapiwrapper.min.js`.
 
 ## 👨‍💻 Who to Contact for Support
-If you have any questions or issues, please reach out to:
-- **Project Owner:** Zoey Azimi (@zoeyazimi)
-- **GitHub Issues:** Submit a bug report or feature request [here](https://github.com/yourusername/AI101-xAPI-Course/issues)
+For any issues or questions, feel free to reach out to:
+- **Zoey Azimi** - zoey.azimi@company.com
+- **GitHub Issues** - Submit a bug report or feature request [here](https://github.com/yourusername/AI101-xAPI-Course/issues)
 
 ---
-
-### 🚀 Happy Learning! 🎓
-
+### 🚀 Ready to track learning analytics? Clone the repo, set up xAPI, and start tracking interactions! 🎯
