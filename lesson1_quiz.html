@@ -3,91 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./src/styles.css">
     <title>Lesson 1 Quiz</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
-        .question {
-            margin-bottom: 20px;
-        }
-        .options button {
-            display: block;
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            font-size: 16px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            background-color: #f9f9f9;
-        }
-        .options button.correct {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        .options button.wrong {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .feedback {
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        textarea {
-            width: 100%;
-            height: 100px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-    </style>
+    <script type="text/javascript" src="./src/cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="./src/xapiwrapper.min.js" defer></script>
     <script>
-        let answered = false;
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ensure xAPI is available before sending statements
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ xAPI library not loaded. Check xapiwrapper.min.js path.");
+                return;
+            }
+
+            console.log("✅ xAPI Wrapper Loaded");
+
+            // Configure xAPI
+            ADL.XAPIWrapper.changeConfig({
+                endpoint: "https://lrs.adlnet.gov/xapi/",
+                auth: "Basic " + btoa("zoey azimi:qytqag-pyVwa3-jofgoz") // Replace with correct credentials
+            });
+
+            // Send "viewed" statement
+            sendStatement("viewed", "lesson1_quiz", "Lesson 1 Quiz");
+        });
+
+        function sendStatement(verb, objectID, objectName, success = null, response = null) {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ ADL.XAPIWrapper not available. Statement not sent.");
+                return;
+            }
+
+            let statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": { "en-US": verb }
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": { "en-US": objectName },
+                        "description": { "en-US": "User interacted with " + objectName }
+                    },
+                    "objectType": "Activity"
+                }
+            };
+
+            if (success !== null) {
+                statement["result"] = { "success": success };
+            }
+            if (response !== null) {
+                statement["result"]["response"] = response;
+            }
+
+            console.log("📤 Sending xAPI statement:", statement);
+
+            ADL.XAPIWrapper.sendStatement(statement, function (err, resp) {
+                if (err) {
+                    console.error("❌ Error sending statement:", err);
+                } else {
+                    console.log("✅ Statement sent successfully:", resp);
+                }
+            });
+        }
 
         function checkAnswer(selected, correct) {
+            let answered = document.querySelectorAll(".options button:disabled").length > 0;
             if (answered) return; // Prevent multiple tries
-            answered = true;
-            
+
             let buttons = document.querySelectorAll('.options button');
             buttons.forEach(btn => btn.disabled = true); // Disable further selection
-            
-            if (selected === correct) {
-                document.getElementById(selected).classList.add('correct');
-                document.getElementById("feedback").innerHTML = "✅ Correct! AI learns from data and improves over time.";
-            } else {
-                document.getElementById(selected).classList.add('wrong');
-                document.getElementById("feedback").innerHTML = "❌ Incorrect. Correct answer: <span style='color: green; font-weight: bold;'>B) AI learns from data and improves over time.</span>";
-                document.getElementById(correct).classList.add('correct');
-            }
+
+            let success = selected === correct;
+            document.getElementById(selected).classList.add(success ? 'correct' : 'wrong');
+            document.getElementById(correct).classList.add('correct');
+
+            let feedbackMessage = success
+                ? "✅ Correct! AI learns from data and improves over time."
+                : "❌ Incorrect. Correct answer: <span style='color: green; font-weight: bold;'>B) AI learns from data and improves over time.</span>";
+
+            document.getElementById("feedback").innerHTML = feedbackMessage;
+
+            // Send xAPI statement
+            sendStatement("answered", "lesson1-quiz-q1", "Lesson 1 Quiz - Q1", success, selected);
         }
 
         function checkOpenEndedAnswer() {
-            let response = document.getElementById("openAnswer").value.trim().toLowerCase();
+            let response = document.getElementById("openAnswer").value.trim();
             let feedback = document.getElementById("openFeedback");
-            
+
             if (!response) {
                 feedback.innerHTML = "❌ Please enter an answer before submitting.";
                 return;
             }
-            
+
             document.getElementById("aiFeedbackBtn").disabled = false;
+            sendStatement("answered", "lesson1-quiz-open", "Lesson 1 Quiz - Open Question", true, response);
+        }
+
+        function completeQuiz() {
+            sendStatement("completed", "lesson1-quiz", "Lesson 1 Quiz Completed", true);
+            window.location.href = 'lesson2.html';  // Navigate to next lesson
         }
 
         function showAIResponse() {
             let response = document.getElementById("openAnswer").value.trim().toLowerCase();
             let feedback = document.getElementById("openFeedback");
-            
+
             if (response.includes("learn") && response.includes("adapt")) {
                 feedback.innerHTML = "✅ Great job! AI can learn and adapt, whereas automation follows fixed rules.";
             } else {
@@ -95,10 +121,52 @@
             }
         }
     </script>
+    <script>
+        function logAndRedirect(verb, objectID, objectName, redirectUrl) {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ ADL.XAPIWrapper not available. Statement not sent.");
+                window.location.href = redirectUrl; // Fallback: Redirect immediately if xAPI fails
+                return;
+            }
+    
+            let statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": { "en-US": verb }
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": { "en-US": objectName },
+                        "description": { "en-US": "User interacted with " + objectName }
+                    },
+                    "objectType": "Activity"
+                }
+            };
+    
+            console.log("📤 Sending xAPI statement:", statement);
+    
+            // Send xAPI statement before redirecting
+            ADL.XAPIWrapper.sendStatement(statement, function (err, resp) {
+                if (err) {
+                    console.error("❌ Error sending statement:", err);
+                } else {
+                    console.log("✅ Statement sent successfully:", resp);
+                }
+                // Wait 300ms before redirecting to ensure statement is sent
+                setTimeout(() => window.location.href = redirectUrl, 300);
+            });
+        }
+    </script>    
 </head>
 <body>
     <h1>📝 Lesson 1 Quiz</h1>
-    
+
     <div class="question">
         <h2>Q1: Which of the following best describes AI?</h2>
         <div class="options">
@@ -118,12 +186,20 @@
         <button id="aiFeedbackBtn" onclick="showAIResponse()" disabled>AI Tutor Feedback</button>
         <p id="openFeedback" class="feedback"></p>
     </div>
-    
+
     <div class="button-container">
-        <button onclick="window.location.href='lesson1.html'">Review Lesson</button>
-        <button onclick="window.location.href='lesson2.html'"> Next Lesson ➡</button>
-        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
-        <button onclick="window.location.href='exit.html'">Quit</button>
+        <button onclick="logAndRedirect('reviewed', 'lesson1', 'Review Lesson', 'lesson1.html')">
+            Review Lesson
+        </button>
+        <button onclick="logAndRedirect('completed', 'lesson1-quiz', 'Lesson 1 Quiz Completed', 'lesson2.html')">
+            Next Lesson ➡
+        </button>
+        <button onclick="logAndRedirect('navigated', 'ai101-course', 'Course Overview', 'ai101.html')">
+            📚 Course Overview
+        </button>
+        <button onclick="logAndRedirect('exited', 'course-exit', 'Exited Course', 'exit.html')">
+            Quit
+        </button>
     </div>
 </body>
 </html>

@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./src/styles.css">
     <title>Introduction to AI - Course Overview</title>
-    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
-    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
+    <script type="text/javascript" src="./src/cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="./src/xapiwrapper.min.js" defer></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // xAPI Configuration, make sure to import correct credentials based on your account on adlnet. 
+            // xAPI Configuration
             var conf = {
                 "endpoint": "https://lrs.adlnet.gov/xAPI/",
-                "auth": "Basic " + btoa("username:password")
+                "auth": "Basic " + btoa("zoey azimi:qytqag-pyVwa3-jofgoz")
             };
             ADL.XAPIWrapper.changeConfig(conf);
             

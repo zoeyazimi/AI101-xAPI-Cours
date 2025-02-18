@@ -3,68 +3,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./src/styles.css">
     <title>Lesson 1: What is AI?</title>
-    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
-    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        iframe {
-            width: 100%;
-            height: 400px;
-            border: none;
-        }
-    </style>
+    <script type="text/javascript" src="./src/cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="./src/xapiwrapper.min.js" defer></script>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
+            // Ensure xAPI is available before sending statements
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ xAPI library not loaded. Check xapiwrapper.min.js path.");
+                return;
+            }
+
+            console.log("✅ xAPI Wrapper Loaded");
+
+            // Configure xAPI
+            ADL.XAPIWrapper.changeConfig({
+                endpoint: "https://lrs.adlnet.gov/xapi/",
+                auth: "Basic " + btoa("zoey azimi:qytqag-pyVwa3-jofgoz") // Replace with correct credentials
+            });
+
+            // Send "viewed" statement
             sendStatement('viewed', 'lesson1', 'Lesson 1: What is AI?');
         });
 
-        function sendStatement(verb, objectID, objectName) {
-            var statement = {
+        function sendStatement(verb, objectID, objectName, success = null, response = null) {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ ADL.XAPIWrapper not available. Statement not sent.");
+                return;
+            }
+
+            let statement = {
                 "actor": {
                     "mbox": "mailto:jane.doe@vorwerk.de",
                     "name": "Jane Doe",
-                    "objectType": "Agent"   
+                    "objectType": "Agent"
                 },
                 "verb": {
                     "id": "http://adlnet.gov/expapi/verbs/" + verb,
-                    "display": {"en-US": verb}
+                    "display": { "en-US": verb }
                 },
                 "object": {
                     "id": "http://vorwerk.de/xapi/" + objectID,
                     "definition": {
-                        "name": {"en-US": objectName},
-                        "description": {"en-US": "User interacted with " + objectName}
+                        "name": { "en-US": objectName },
+                        "description": { "en-US": "User interacted with " + objectName }
                     },
                     "objectType": "Activity"
                 }
             };
-            
-            ADL.XAPIWrapper.sendStatement(statement, function(err, resp) {
+
+            if (success !== null) {
+                statement["result"] = { "success": success };
+            }
+            if (response !== null) {
+                statement["result"]["response"] = response;
+            }
+
+            console.log("📤 Sending xAPI statement:", statement);
+
+            ADL.XAPIWrapper.sendStatement(statement, function (err, resp) {
                 if (err) {
-                    console.error("Error sending statement:", err);
+                    console.error("❌ Error sending statement:", err);
                 } else {
-                    console.log("Statement sent successfully:", resp);
+                    console.log("✅ Statement sent successfully:", resp);
                 }
             });
         }
     </script>
+    
+    <script>
+        let videoStarted=false
+        let videoFinished=false
+        document.addEventListener("DOMContentLoaded", function () {
+            let video = document.getElementById("lesson1-video");
+        
+            // Track when the video starts
+            video.addEventListener("play", function () {
+                if (!videoStarted) {
+                    sendStatement('experienced', 'lesson1-video', 'AI Evolution Video');
+                    videoStarted = true;
+                }
+            });
+        
+            // Track when the video ends
+            video.addEventListener("ended", function () {
+                if (!videoFinished) {
+                    sendStatement('completed', 'lesson1-video', 'AI Evolution Video Completed');
+                    videoFinished = true;
+                }
+            });
+        });
+    </script>
+    
+    <script>
+        function logAndRedirect(verb, objectID, objectName, redirectUrl) {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ ADL.XAPIWrapper not available. Statement not sent.");
+                window.location.href = redirectUrl; // Fallback: Redirect immediately if xAPI fails
+                return;
+            }
+    
+            let statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": { "en-US": verb }
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": { "en-US": objectName },
+                        "description": { "en-US": "User interacted with " + objectName }
+                    },
+                    "objectType": "Activity"
+                }
+            };
+    
+            console.log("📤 Sending xAPI statement:", statement);
+    
+            // Send xAPI statement before redirecting
+            ADL.XAPIWrapper.sendStatement(statement, function (err, resp) {
+                if (err) {
+                    console.error("❌ Error sending statement:", err);
+                } else {
+                    console.log("✅ Statement sent successfully:", resp);
+                }
+                // Wait 300ms before redirecting to ensure statement is sent
+                setTimeout(() => window.location.href = redirectUrl, 300);
+            });
+        }
+    </script>    
 </head>
 <body>
     <h1>📘 Lesson 1: What is AI?</h1>
@@ -81,7 +154,11 @@
     </table>
     
     <h2>📺 Video Content:</h2>
-    <iframe src="https://share.synthesia.io/5cdccafd-a4e7-4acf-8655-e4fda9c14c4c" allowfullscreen onclick="sendStatement('experienced', 'lesson1-video', 'AI Evolution Video')"></iframe>
+    <h2>📺 Video Content:</h2>
+    <video id="lesson1-video" width="100%" controls>
+        <source src="./assets/introAI101.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
     
     <h2>📊 Key Takeaways:</h2>
     <ul>
@@ -91,9 +168,20 @@
     </ul>
     
     <div class="button-container">
-        <button onclick="window.location.href='ai101.html'">⬅ Back</button>
-        <button onclick="window.location.href='lesson1_quiz.html'">📝 Quiz</button>
-        <button onclick="window.location.href='lesson2.html'"> Next Lesson ➡</button>
+        <button onclick="logAndRedirect('interacted', 'ai101-course', 'Course Overview', 'ai101.html')">⬅ Back</button>
+        <button onclick="logAndRedirect('completed', 'lesson1', 'Lesson 1 Completed', 'lesson2.html')">
+            Next Lesson ➡
+        </button>
+        <button onclick="logAndRedirect('navigated', 'ai101-course', 'Course Overview', 'ai101.html')">
+            📚 Course Overview
+        </button>
+        <button onclick="logAndRedirect('interacted', 'lesson1_quiz', 'Quizz 1 Initiated', 'lesson1_quiz.html')">
+            📝 Quiz
+        </button>
+        <button onclick="logAndRedirect('exited', 'course-exit', 'Exited Course', 'exit.html')">
+            Quit
+        </button>
     </div>
+
 </body>
 </html>
