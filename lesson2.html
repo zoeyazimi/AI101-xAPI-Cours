@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="./src/styles.css">
-    <title>Lesson 2 Quiz</title>
+    <title>Lesson 2: AI Applications</title>
     <script type="text/javascript" src="./src/cryptojs_v3.1.2.js"></script>
     <script type="text/javascript" src="./src/xapiwrapper.min.js" defer></script>
     <script>
@@ -22,8 +22,11 @@
                 endpoint: "https://lrs.adlnet.gov/xapi/",
                 auth: "Basic " + btoa("zoey azimi:qytqag-pyVwa3-jofgoz") // Replace with correct credentials
             });
-            sendStatement("viewed", "lesson2_quiz", "Lesson 2 Quiz");
+
+            // Send "viewed" statement
+            sendStatement('viewed', 'lesson2', 'Lesson 2: AI Applications');
         });
+
         function sendStatement(verb, objectID, objectName, success = null, response = null) {
             if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
                 console.error("❌ ADL.XAPIWrapper not available. Statement not sent.");
@@ -66,54 +69,6 @@
                     console.log("✅ Statement sent successfully:", resp);
                 }
             });
-        }
-
-        function checkAnswer(selected, correct) {
-            let answered = document.querySelectorAll(".options button:disabled").length > 0;
-            if (answered) return; // Prevent multiple tries
-
-            let buttons = document.querySelectorAll('.options button');
-            buttons.forEach(btn => btn.disabled = true); // Disable further selection
-
-            let success = selected === correct;
-            document.getElementById(selected).classList.add(success ? 'correct' : 'wrong');
-            document.getElementById(correct).classList.add('correct');
-
-            let feedbackMessage2 = success
-                ? "✅ Correct! AI learns from data and improves over time."
-                : "❌ Incorrect. Correct answer: <span style='color: green; font-weight: bold;'>B) AI learns from data and improves over time.</span>";
-
-            document.getElementById("feedback").innerHTML = feedbackMessage2;
-            sendStatement("answered", "lesson2-quiz-q1", "Lesson 2 Quiz - Q2", success, selected);
-        }
-
-        function checkOpenEndedAnswer() {
-            let response = document.getElementById("openAnswer").value.trim();
-            let feedback = document.getElementById("openFeedback");
-
-            if (!response) {
-                feedback.innerHTML = "❌ Please enter an answer before submitting.";
-                return;
-            }
-
-            document.getElementById("aiFeedbackBtn").disabled = false;
-            sendStatement("answered", "lesson2-quiz-open", "Lesson 2 Quiz - Open Question", true, response);
-        }
-
-        function completeQuiz() {
-            sendStatement("completed", "lesson2-quiz", "Lesson 2 Quiz Completed", true);
-            window.location.href = 'lesson3.html';  // Navigate to next lesson
-        }
-
-        function showAIResponse() {
-            let response = document.getElementById("openAnswer").value.trim().toLowerCase();
-            let feedback = document.getElementById("openFeedback");
-
-            if (response.includes("learn") && response.includes("adapt")) {
-                feedback.innerHTML = "✅ Great job! AI can learn and adapt, whereas automation follows fixed rules.";
-            } else {
-                feedback.innerHTML = "❌ Think about how AI chatbots like Siri respond differently each time, but automation is repetitive.";
-            }
         }
     </script>
     <script>
@@ -158,44 +113,34 @@
             });
         }
     </script>    
+
 </head>
 <body>
-    <h1>Lesson 2: AI Applications - Quiz</h1>
+    <h1>📘 Lesson 2: AI Applications</h1>
+    <h2>📖 Text Summary:</h2>
+    <p>"AI is transforming industries such as healthcare, finance, and transportation. Examples include medical diagnosis using AI models, fraud detection in banking, and self-driving cars."</p>
     
-    <div class="question">
-        <h3>Q2: Which of the following is NOT an AI application?</h3>
-        <div class="options">
-            <button id="A" onclick="checkAnswer('A', 'B')">A) Self-driving cars</button>
-            <button id="B" onclick="checkAnswer('B', 'B')">B) Automated assembly line robots</button>
-            <button id="C" onclick="checkAnswer('C', 'B')">C) AI-powered fraud detection</button>
-            <button id="D" onclick="checkAnswer('D', 'B')">D) AI-based voice assistants</button>
-        </div>
-        <p id="correctAnswer"></p>
-    </div>
-
-    <div class="question">
-        <h3>✍ Open-ended question:</h3>
-        <p>"Give an example of an AI application in your industry and explain its impact."</p>
-        <textarea id="openEnded" placeholder="Type your response here..."></textarea>
-        <button onclick="checkOpenEndedAnswer()">Submit</button>
-        <button id="aiFeedbackBtn" onclick="showAIResponse()" disabled>AI Tutor Feedback</button>
-        <p id="openFeedback" class="feedback"></p>
-    </div>
-
+    <h2>📊 Case Study Examples:</h2>
+    <ul>
+        <li><strong>Healthcare:</strong> AI-powered <strong>X-ray analysis</strong> (e.g., Google’s DeepMind detecting diseases).</li>
+        <li><strong>Finance:</strong> AI fraud detection (e.g., banks identifying unusual transactions).</li>
+        <li><strong>Robotics:</strong> AI-driven self-driving cars (e.g., Tesla’s autopilot system).</li>
+    </ul>
+    
     <div class="button-container">
-        <button onclick="logAndRedirect('reviewed', 'lesson2', 'Review Lesson', 'lesson2.html')">
-            Review Lesson
-        </button>
-        <button onclick="logAndRedirect('completed', 'lesson2-quiz', 'Lesson 2 Quiz Completed', 'lesson3.html')">
+        <button onclick="logAndRedirect('interacted', 'lesson1', 'Back to Lesson1', 'lesson1.html')">⬅ Back</button>
+        <button onclick="logAndRedirect('completed', 'lesson3', 'Lesson 2 Completed', 'lesson3.html')">
             Next Lesson ➡
         </button>
         <button onclick="logAndRedirect('navigated', 'ai101-course', 'Course Overview', 'ai101.html')">
             📚 Course Overview
         </button>
+        <button onclick="logAndRedirect('interacted', 'lesson2_quiz', 'Quizz 2 Initiated', 'lesson2_quiz.html')">
+            📝 Quiz
+        </button>
         <button onclick="logAndRedirect('exited', 'course-exit', 'Exited Course', 'exit.html')">
             Quit
         </button>
     </div>
-
 </body>
 </html>
