@@ -3,103 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="./src/styles.css">
     <title>Lesson 3 Quiz</title>
-    <script type="text/javascript" src="cryptojs_v3.1.2.js"></script>
-    <script type="text/javascript" src="xapiwrapper.min.js" defer></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            max-width: 800px;
-            margin: auto;
-            padding: 20px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        button {
-            padding: 10px 15px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-        .correct {
-            color: green;
-            font-weight: bold;
-        }
-        .incorrect {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
+    <script type="text/javascript" src="./src/cryptojs_v3.1.2.js"></script>
+    <script type="text/javascript" src="./src/xapiwrapper.min.js" defer></script>
     <script>
-        function checkAnswer() {
-            var selected = document.querySelector('input[name="q1"]:checked');
-            if (!selected) return;
-            
-            var answer = selected.value;
-            document.getElementById('feedback').innerHTML = "";
-            
-            if (answer === "A") {
-                document.getElementById('feedback').innerHTML = "✔ Correct answer: A) Supervised learning requires labeled data for training.";
-                document.getElementById('feedback').className = "correct";
-            } else {
-                document.getElementById('feedback').innerHTML = "❌ Incorrect. The correct answer is: A) Supervised learning requires labeled data for training.";
-                document.getElementById('feedback').className = "incorrect";
+        document.addEventListener("DOMContentLoaded", function () {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ xAPI library not loaded. Check xapiwrapper.min.js path.");
+                return;
             }
-            
-            sendStatement('answered', 'lesson3-quiz-q1', 'Lesson 3 Quiz Q1');
-        }
 
-        function sendStatement(verb, objectID, objectName) {
-            var statement = {
+            console.log("✅ xAPI Wrapper Loaded");
+
+            ADL.XAPIWrapper.changeConfig({
+                endpoint: "https://lrs.adlnet.gov/xapi/",
+                auth: "Basic " + btoa("zoey azimi:qytqag-pyVwa3-jofgoz") // Replace with correct credentials
+            });
+
+            sendStatement("viewed", "lesson3_quiz", "Lesson 3 Quiz");
+        });
+
+        function sendStatement(verb, objectID, objectName, success = null, response = null) {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ ADL.XAPIWrapper not available. Statement not sent.");
+                return;
+            }
+
+            let statement = {
                 "actor": {
                     "mbox": "mailto:jane.doe@vorwerk.de",
                     "name": "Jane Doe",
-                    "objectType": "Agent"   
+                    "objectType": "Agent"
                 },
                 "verb": {
                     "id": "http://adlnet.gov/expapi/verbs/" + verb,
-                    "display": {"en-US": verb}
+                    "display": { "en-US": verb }
                 },
                 "object": {
                     "id": "http://vorwerk.de/xapi/" + objectID,
                     "definition": {
-                        "name": {"en-US": objectName},
-                        "description": {"en-US": "User interacted with " + objectName}
+                        "name": { "en-US": objectName },
+                        "description": { "en-US": "User interacted with " + objectName }
                     },
                     "objectType": "Activity"
                 }
             };
-            
-            ADL.XAPIWrapper.sendStatement(statement, function(err, resp) {
+
+            if (success !== null) {
+                statement["result"] = { "success": success };
+            }
+            if (response !== null) {
+                statement["result"]["response"] = response;
+            }
+
+            console.log("📤 Sending xAPI statement:", statement);
+
+            ADL.XAPIWrapper.sendStatement(statement, function (err, resp) {
                 if (err) {
-                    console.error("Error sending statement:", err);
+                    console.error("❌ Error sending statement:", err);
                 } else {
-                    console.log("Statement sent successfully:", resp);
+                    console.log("✅ Statement sent successfully:", resp);
                 }
+            });
+        }
+
+        function checkAnswer(selected, correct) {
+            let answered = document.querySelectorAll("input[name='q1']:checked").length > 0;
+            if (!answered) return; // Prevent multiple submissions
+
+            let buttons = document.querySelectorAll("input[name='q1']");
+            buttons.forEach(btn => btn.disabled = true); // Disable further selection
+
+            let success = selected === correct;
+            document.getElementById("feedback").innerHTML = success
+                ? "✅ Correct! Supervised learning requires labeled data for training."
+                : "❌ Incorrect. Correct answer: <span style='color: green; font-weight: bold;'>A) Supervised learning requires labeled data for training.</span>";
+
+            document.getElementById(correct).parentElement.classList.add("correct");
+            if (!success) {
+                document.getElementById(selected).parentElement.classList.add("wrong");
+            }
+
+            sendStatement("answered", "lesson3-quiz-q1", "Lesson 3 Quiz - Q1", success, selected);
+        }
+
+        function completeQuiz() {
+            sendStatement("completed", "lesson3-quiz", "Lesson 3 Quiz Completed", true);
+            window.location.href = "lesson4.html";  // Navigate to next lesson
+        }
+
+        function logAndRedirect(verb, objectID, objectName, redirectUrl) {
+            if (typeof ADL === "undefined" || !ADL.XAPIWrapper) {
+                console.error("❌ ADL.XAPIWrapper not available. Redirecting...");
+                window.location.href = redirectUrl;
+                return;
+            }
+
+            let statement = {
+                "actor": {
+                    "mbox": "mailto:jane.doe@vorwerk.de",
+                    "name": "Jane Doe",
+                    "objectType": "Agent"
+                },
+                "verb": {
+                    "id": "http://adlnet.gov/expapi/verbs/" + verb,
+                    "display": { "en-US": verb }
+                },
+                "object": {
+                    "id": "http://vorwerk.de/xapi/" + objectID,
+                    "definition": {
+                        "name": { "en-US": objectName },
+                        "description": { "en-US": "User interacted with " + objectName }
+                    },
+                    "objectType": "Activity"
+                }
+            };
+
+            console.log("📤 Sending xAPI statement:", statement);
+
+            ADL.XAPIWrapper.sendStatement(statement, function (err, resp) {
+                if (err) {
+                    console.error("❌ Error sending statement:", err);
+                } else {
+                    console.log("✅ Statement sent successfully:", resp);
+                }
+                setTimeout(() => window.location.href = redirectUrl, 300);
             });
         }
     </script>
 </head>
 <body>
-    <h1>📘 Lesson 3 Quiz</h1>
-    <h2>📌 MCQ Example for Lesson 3:</h2>
-    <p><strong>Q1:</strong> What is the main difference between Supervised and Unsupervised Learning?</p>
-    <form>
-        <input type="radio" name="q1" value="A"> A) Supervised learning requires labeled data, unsupervised does not<br>
-        <input type="radio" name="q1" value="B"> B) Unsupervised learning uses human-labeled datasets<br>
-        <input type="radio" name="q1" value="C"> C) Supervised learning works without any prior data<br>
-        <input type="radio" name="q1" value="D"> D) Both methods require manually labeled data<br>
-    </form>
-    <button onclick="checkAnswer()">Submit Answer</button>
-    <p id="feedback"></p>
-    
+    <h1>📝 Lesson 3 Quiz</h1>
+
+    <div class="question">
+        <h2>Q1: What is the main difference between Supervised and Unsupervised Learning?</h2>
+        <form>
+            <label><input type="radio" name="q1" id="A" value="A" onclick="checkAnswer('A', 'A')"> A) Supervised learning requires labeled data, unsupervised does not</label><br>
+            <label><input type="radio" name="q1" id="B" value="B" onclick="checkAnswer('B', 'A')"> B) Unsupervised learning uses human-labeled datasets</label><br>
+            <label><input type="radio" name="q1" id="C" value="C" onclick="checkAnswer('C', 'A')"> C) Supervised learning works without any prior data</label><br>
+            <label><input type="radio" name="q1" id="D" value="D" onclick="checkAnswer('D', 'A')"> D) Both methods require manually labeled data</label><br>
+        </form>
+        <p id="feedback" class="feedback"></p>
+    </div>
+
     <div class="button-container">
-        <button onclick="window.location.href='lesson3.html'">⬅ Review Lesson</button>
-        <button onclick="window.location.href='ai101.html'">📚 Course Overview</button>
-        <button onclick="alert('Next lesson will be added soon.')">Next Lesson ➡</button>
+        <button onclick="logAndRedirect('reviewed', 'lesson3', 'Review Lesson', 'lesson3.html')">
+            ⬅ Review Lesson
+        </button>
+        <button onclick="logAndRedirect('completed', 'lesson3-quiz', 'Lesson 3 Quiz Completed', 'lesson4.html')">
+            Next Lesson ➡
+        </button>
+        <button onclick="logAndRedirect('navigated', 'ai101-course', 'Course Overview', 'ai101.html')">
+            📚 Course Overview
+        </button>
+        <button onclick="logAndRedirect('exited', 'course-exit', 'Exited Course', 'exit.html')">
+            Quit
+        </button>
     </div>
 </body>
 </html>
